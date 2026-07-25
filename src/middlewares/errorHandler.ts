@@ -1,15 +1,21 @@
 import type { ErrorRequestHandler } from 'express';
 import createHttpError from 'http-errors';
 
-const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  if (createHttpError.isHttpError(err)) {
-    return res.status(err.status).json({
-      message: err.message,
-    });
+const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
+  const isDev = process.env.NODE_ENV === 'development';
+
+  const status = createHttpError.isHttpError(err) ? err.status : 500;
+  const message = createHttpError.isHttpError(err)
+    ? err.message
+    : 'Internal server error';
+
+  if (!createHttpError.isHttpError(err)) {
+    req.log.error(err);
   }
 
-  res.status(500).json({
-    message: err instanceof Error ? err.message : 'Internal server error',
+  res.status(status).json({
+    message,
+    ...(isDev && err instanceof Error && { stack: err.stack }),
   });
 };
 
