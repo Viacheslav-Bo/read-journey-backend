@@ -1,15 +1,16 @@
 import { Router } from 'express';
+import {
+  getBooksController,
+  getBookByIdController,
+} from '../controllers/booksController.js';
+
 const router = Router();
 
 // ================= BOOKS =================
 // Рекомендовані книги
-router.get('/', (req, res) => {
-  res.status(200).json({ message: 'recommended books' });
-});
+router.get('/', getBooksController);
 
 // Інформація про одну книгу
-router.get('/:bookId', (req, res) => {
-  res.status(200).json({ message: 'book details' });
-});
+router.get('/:bookId', getBookByIdController);
 
 export default router;

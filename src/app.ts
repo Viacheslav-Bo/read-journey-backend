@@ -1,7 +1,8 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 
-import logger from './middlewares/logger.js';
+import { httpLogger } from './middlewares/httpLogger.js';
 import notFoundHandler from './middlewares/notFoundHandler.js';
 import errorHandler from './middlewares/errorHandler.js';
 
@@ -12,18 +13,23 @@ import readingRouter from './routes/reading.js';
 
 const app = express();
 
-app.use(express.json());
+app.use(httpLogger);
 app.use(cors());
-app.use(logger);
+app.use(helmet());
+app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.status(200).json({ message: 'Hello word!' });
+  res.status(200).json({ message: 'Hello worllld!' });
 });
 
 app.use('/auth', authRouter);
 app.use('/books', booksRouter);
 app.use('/library', libraryRouter);
 app.use('/reading', readingRouter);
+
+app.get('/test', (req, res) => {
+  throw new Error('Hello err!');
+});
 
 app.use(notFoundHandler);
 app.use(errorHandler);

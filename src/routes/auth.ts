@@ -1,12 +1,13 @@
 import { Router } from 'express';
+import { register } from '../controllers/authController.js';
+import { validate } from '../middlewares/validate.js';
+import { registerUserSchema } from '../validations/authValidation.js';
 // ================= AUTH =================
 
 const router = Router();
 
 // Реєстрація
-router.post('/register', (req, res) => {
-  res.status(201).json({ message: 'register' });
-});
+router.post('/register', validate(registerUserSchema), register);
 
 // Логін
 router.post('/login', (req, res) => {

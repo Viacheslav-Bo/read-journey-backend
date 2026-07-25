@@ -1,21 +1,25 @@
 import { Router } from 'express';
-const router = Router();
 
+import {
+  getLibraryBooksController,
+  getLibraryBookByIdController,
+  addBookToLibraryController,
+} from '../controllers/libraryController.js';
+
+const router = Router();
 // ================= LIBRARY =================
 
 // Бібліотека користувача
-router.get('/', (req, res) => {
-  res.status(200).json({ message: 'my library' });
-});
+router.get('/', getLibraryBooksController);
+
+router.get('/:bookId', getLibraryBookByIdController);
 
 // Додати книгу в бібліотеку
-router.post('/', (req, res) => {
-  res.status(201).json({ message: 'book added' });
-});
+router.post('/', addBookToLibraryController);
 
-// Видалити книгу з бібліотеки
-router.delete('/:bookId', (req, res) => {
-  res.status(200).json({ message: 'book removed' });
-});
+// // Видалити книгу з бібліотеки
+// router.delete('/:bookId', (req, res) => {
+//   res.status(200).json({ message: 'book removed' });
+// });
 
 export default router;
