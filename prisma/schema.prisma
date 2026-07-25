@@ -1,0 +1,76 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum ReadingStatus {
+  UNREAD
+  READING
+  FINISHED
+}
+
+model User {
+  id       String @id @default(cuid())
+  name     String
+  email    String @unique
+  password String
+
+  library LibraryBook[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  sessions  Session[]
+}
+
+model LibraryBook {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  openLibraryId String
+  title         String
+  author        String
+  coverUrl      String?
+  totalPages    Int
+  currentPage   Int @default(0)
+  @@unique([userId, openLibraryId])
+
+  status ReadingStatus @default(UNREAD)
+
+  sessions ReadingSession[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ReadingSession {
+  id String @id @default(cuid())
+
+  libraryBookId String
+  libraryBook   LibraryBook @relation(fields: [libraryBookId], references: [id], onDelete: Cascade)
+
+  startPage Int
+  endPage   Int
+
+  startedAt  DateTime
+  finishedAt DateTime
+
+  createdAt DateTime @default(now())
+}
+
+model Session {
+  id String @id @default(cuid())
+
+  refreshToken String @unique
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
