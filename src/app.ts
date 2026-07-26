@@ -1,8 +1,8 @@
-import express from 'express';
+import { httpLogger } from './middlewares/httpLogger.js';
 import cors from 'cors';
 import helmet from 'helmet';
-
-import { httpLogger } from './middlewares/httpLogger.js';
+import express from 'express';
+import cookieParser from 'cookie-parser';
 import notFoundHandler from './middlewares/notFoundHandler.js';
 import errorHandler from './middlewares/errorHandler.js';
 
@@ -17,6 +17,7 @@ app.use(httpLogger);
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
+app.use(cookieParser());
 
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'Hello worllld!' });

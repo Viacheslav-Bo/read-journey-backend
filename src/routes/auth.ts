@@ -1,7 +1,17 @@
 import { Router } from 'express';
-import { register } from '../controllers/authController.js';
+import {
+  login,
+  logout,
+  refresh,
+  register,
+} from '../controllers/authController.js';
 import { validate } from '../middlewares/validate.js';
-import { registerUserSchema } from '../validations/authValidation.js';
+import {
+  loginUserSchema,
+  registerUserSchema,
+} from '../validations/authValidation.js';
+import { authenticate } from '../middlewares/authenticate.js';
+
 // ================= AUTH =================
 
 const router = Router();
@@ -10,23 +20,17 @@ const router = Router();
 router.post('/register', validate(registerUserSchema), register);
 
 // Логін
-router.post('/login', (req, res) => {
-  res.status(200).json({ message: 'login' });
-});
+router.post('/login', validate(loginUserSchema), login);
 
 // Поточний користувач
-router.get('/me', (req, res) => {
-  res.status(200).json({ message: 'current user' });
+router.get('/me', authenticate, (req, res) => {
+  res.status(200).json({ user: req.user });
 });
 
 // Оновлення access token (якщо використовуватимеш refresh token)
-router.post('/refresh', (req, res) => {
-  res.status(200).json({ message: 'refresh token' });
-});
+router.post('/refresh', refresh);
 
 // Вихід
-router.post('/logout', (req, res) => {
-  res.status(200).json({ message: 'logout' });
-});
+router.post('/logout', logout);
 
 export default router;
