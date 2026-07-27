@@ -22,6 +22,7 @@ export const httpLogger = pinoHttp({
       ignore: 'pid,hostname,req,res,responseTime',
       messageFormat:
         '{req.method} {req.url} {res.statusCode} - {responseTime}ms',
+      hideObject: true,
     },
   },
 });
