@@ -14,7 +14,12 @@ import readingRouter from './routes/reading.js';
 const app = express();
 
 app.use(httpLogger);
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_DOMAIN,
+    credentials: true,
+  }),
+);
 app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());
