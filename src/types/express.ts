@@ -6,6 +6,7 @@ declare global {
       user?: JwtPayload;
       validatedBody?: unknown;
       validatedQuery?: unknown;
+      validatedParams?: unknown;
     }
   }
 }
