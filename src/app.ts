@@ -8,7 +8,7 @@ import errorHandler from './middlewares/errorHandler.js';
 
 import authRouter from './routes/auth.js';
 import booksRouter from './routes/books.js';
-import libraryRouter from './routes/library.js';
+// import libraryRouter from './routes/library.js';
 import readingRouter from './routes/reading.js';
 
 const app = express();
@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
 
 app.use('/auth', authRouter);
 app.use('/books', booksRouter);
-app.use('/library', libraryRouter);
+// app.use('/library', libraryRouter);
 app.use('/reading', readingRouter);
 
 app.get('/test', (req, res) => {
