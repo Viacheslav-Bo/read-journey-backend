@@ -55,10 +55,10 @@ model ReadingSession {
   libraryBook   LibraryBook @relation(fields: [libraryBookId], references: [id], onDelete: Cascade)
 
   startPage Int
-  endPage   Int
+  endPage   Int?
 
   startedAt  DateTime
-  finishedAt DateTime
+  finishedAt DateTime?
 
   createdAt DateTime @default(now())
 }
