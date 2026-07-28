@@ -7,7 +7,4 @@ const router = Router();
 
 router.get('/', validateQuery(booksQuerySchema), getBooks);
 
-// Інформація про одну книгу
-// router.get('/:bookId');
-
 export default router;

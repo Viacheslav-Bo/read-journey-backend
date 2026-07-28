@@ -20,17 +20,13 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.get('/', (req, res) => {
-  res.status(200).json({ message: 'Hello worllld!' });
+  res.status(200).json({ message: 'Read Journey API, by Viacheslav-Bo' });
 });
 
 app.use('/auth', authRouter);
 app.use('/books', booksRouter);
 app.use('/library', libraryRouter);
 app.use('/reading', readingRouter);
-
-app.get('/test', (req, res) => {
-  throw new Error('Hello err!');
-});
 
 app.use(notFoundHandler);
 app.use(errorHandler);
