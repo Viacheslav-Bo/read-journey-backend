@@ -1,24 +1,33 @@
 import { Router } from 'express';
-// import { authenticate } from '../middlewares/authenticate.js';
-// import { validateQuery } from '../middlewares/validate.js';
-// import { statusOfBook } from '../controllers/libraryController.js';
+import { validateBody, validateParams } from '../middlewares/validate.js';
+import {
+  idParamSchema,
+  stopReadingSchema,
+} from '../validations/readingValidation.js';
+import {
+  startReading,
+  stats,
+  stopReading,
+} from '../controllers/readingController.js';
+import { authenticate } from '../middlewares/authenticate.js';
+
 const router = Router();
 
-// ================= READING =================
+router.post(
+  '/:id/start',
+  authenticate,
+  validateParams(idParamSchema),
+  startReading,
+);
 
-// Почати читання
-router.post('/start', (req, res) => {
-  res.status(201).json({ message: 'reading finished' });
-});
+router.post(
+  '/:id/stop',
+  authenticate,
+  validateParams(idParamSchema),
+  validateBody(stopReadingSchema),
+  stopReading,
+);
 
-// Закінчити читання
-router.post('/finish', (req, res) => {
-  res.status(201).json({ message: 'reading finished' });
-});
-
-// Видалити запис із щоденника
-router.delete('/:sessionId', (req, res) => {
-  res.status(200).json({ message: 'reading session deleted' });
-});
+router.get('/:id/stats', authenticate, validateParams(idParamSchema), stats);
 
 export default router;
