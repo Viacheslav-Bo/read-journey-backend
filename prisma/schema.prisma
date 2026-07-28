@@ -32,7 +32,7 @@ model LibraryBook {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  openLibraryId String
+  openLibraryId String?
   title         String
   author        String
   coverUrl      String?
