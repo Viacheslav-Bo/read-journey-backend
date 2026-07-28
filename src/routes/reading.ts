@@ -3,11 +3,13 @@ import { validateBody, validateParams } from '../middlewares/validate.js';
 import {
   idParamSchema,
   stopReadingSchema,
+  sessionParamSchema,
 } from '../validations/readingValidation.js';
 import {
   startReading,
   stats,
   stopReading,
+  deleteSession,
 } from '../controllers/readingController.js';
 import { authenticate } from '../middlewares/authenticate.js';
 
@@ -29,5 +31,12 @@ router.post(
 );
 
 router.get('/:id/stats', authenticate, validateParams(idParamSchema), stats);
+
+router.delete(
+  '/:id/sessions/:sessionId',
+  authenticate,
+  validateParams(sessionParamSchema),
+  deleteSession,
+);
 
 export default router;

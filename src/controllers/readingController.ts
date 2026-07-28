@@ -8,6 +8,8 @@ import {
 import { start } from '../services/reading/startReading.js';
 import { stop } from '../services/reading/stopReading.js';
 import { getReadingSessions } from '../services/reading/readingSession.js';
+import { deleteReadingSession } from '../services/reading/deleteSession.js';
+import { sessionParamSchema } from '../validations/readingValidation.js';
 
 export const startReading = async (req: Request, res: Response) => {
   if (!req.user) throw createHttpError(401, 'Unauthorized');
@@ -41,4 +43,15 @@ export const stats = async (req: Request, res: Response) => {
 
   const sessions = await getReadingSessions(user.userId, libraryBookId);
   res.status(200).json(sessions);
+};
+
+export const deleteSession = async (req: Request, res: Response) => {
+  if (!req.user) throw createHttpError(401, 'Unauthorized');
+  const { userId } = req.user;
+  const { id: libraryBookId, sessionId } = req.validatedParams as z.infer<
+    typeof sessionParamSchema
+  >;
+
+  await deleteReadingSession(userId, libraryBookId, sessionId);
+  res.status(200).json({ message: 'Session removed' });
 };

@@ -7,3 +7,8 @@ export const idParamSchema = z.object({
 export const stopReadingSchema = z.object({
   endPage: z.number().int().positive(),
 });
+
+export const sessionParamSchema = z.object({
+  id: z.string(),
+  sessionId: z.string(),
+});
