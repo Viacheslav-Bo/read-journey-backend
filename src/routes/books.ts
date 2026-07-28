@@ -5,8 +5,6 @@ import { getBooks } from '../controllers/booksController.js';
 
 const router = Router();
 
-// ================= BOOKS =================
-// Рекомендовані книги
 router.get('/', validateQuery(booksQuerySchema), getBooks);
 
 // Інформація про одну книгу
