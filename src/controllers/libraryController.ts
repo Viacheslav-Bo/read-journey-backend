@@ -1,47 +1,44 @@
 import type { Request, Response } from 'express';
+import type { z } from 'zod';
+import { addBookToLibrary } from '../services/library/addBook.js';
 import {
-  getLibraryAllBooks,
-  getLibraryBookById,
-  addBookToLibrary,
-} from '../services/library.js';
+  addBookSchema,
+  getBooksSchema,
+  idParamSchema,
+} from '../validations/libraryValidation.js';
+import createHttpError from 'http-errors';
+import { getBooksFromLibrary } from '../services/library/getBooks.js';
+import { deleteBookFromLibrary } from '../services/library/deleteBook.js';
 
-export const getLibraryBooksController = async (
-  req: Request,
-  res: Response,
-) => {
-  const books = await getLibraryAllBooks();
+export const addBook = async (req: Request, res: Response) => {
+  if (!req.user) throw createHttpError(401, 'Unauthorized');
+  const user = req.user;
 
-  res.status(200).json(books);
+  const { title, author, totalPages } = req.validatedBody as z.infer<
+    typeof addBookSchema
+  >;
+  const result = await addBookToLibrary(user.userId, {
+    title,
+    author,
+    totalPages,
+  });
+  res.status(200).json(result);
 };
 
-type BookParams = {
-  bookId: string;
+export const getBooks = async (req: Request, res: Response) => {
+  if (!req.user) throw createHttpError(401, 'Unauthorized');
+  const user = req.user;
+
+  const { status } = req.validatedQuery as z.infer<typeof getBooksSchema>;
+  const result = await getBooksFromLibrary(user.userId, status);
+  res.status(200).json(result);
 };
 
-export const getLibraryBookByIdController = async (
-  req: Request<BookParams>,
-  res: Response,
-) => {
-  const { bookId } = req.params;
+export const deleteBook = async (req: Request, res: Response) => {
+  if (!req.user) throw createHttpError(401, 'Unauthorized');
+  const user = req.user;
+  const { id: bookId } = req.validatedParams as z.infer<typeof idParamSchema>;
 
-  const book = await getLibraryBookById(bookId);
-
-  res.status(200).json(book);
-};
-
-type AddBookBody = {
-  openLibraryId: string;
-  title: string;
-  author: string;
-  coverUrl?: string;
-  totalPages: number;
-};
-
-export const addBookToLibraryController = async (
-  req: Request<{}, {}, AddBookBody>,
-  res: Response,
-) => {
-  const book = await addBookToLibrary('тестовий-id', req.body);
-
-  res.status(201).json(book);
+  await deleteBookFromLibrary(user.userId, bookId);
+  res.status(200).json({ message: 'Book removed' });
 };

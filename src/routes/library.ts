@@ -1,25 +1,26 @@
 import { Router } from 'express';
 
 import {
-  getLibraryBooksController,
-  getLibraryBookByIdController,
-  addBookToLibraryController,
+  addBook,
+  deleteBook,
+  getBooks,
 } from '../controllers/libraryController.js';
+import { authenticate } from '../middlewares/authenticate.js';
+import {
+  validateBody,
+  validateParams,
+  validateQuery,
+} from '../middlewares/validate.js';
+import {
+  addBookSchema,
+  getBooksSchema,
+  idParamSchema,
+} from '../validations/libraryValidation.js';
 
 const router = Router();
-// ================= LIBRARY =================
 
-// Бібліотека користувача
-router.get('/', getLibraryBooksController);
-
-router.get('/:bookId', getLibraryBookByIdController);
-
-// Додати книгу в бібліотеку
-router.post('/', addBookToLibraryController);
-
-// // Видалити книгу з бібліотеки
-// router.delete('/:bookId', (req, res) => {
-//   res.status(200).json({ message: 'book removed' });
-// });
+router.get('/', authenticate, validateQuery(getBooksSchema), getBooks);
+router.post('/', authenticate, validateBody(addBookSchema), addBook);
+router.delete('/:id', authenticate, validateParams(idParamSchema), deleteBook);
 
 export default router;
