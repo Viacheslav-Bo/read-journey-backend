@@ -4,9 +4,16 @@ import { logoutUser } from '../services/auth/logoutUser.js';
 import { registerUser } from '../services/auth/registerUser.js';
 import { refreshUserSession } from '../services/auth/refreshSession.js';
 import type { Request, Response } from 'express';
+import {
+  registerUserSchema,
+  loginUserSchema,
+} from '../validations/authValidation.js';
+import type { z } from 'zod';
 
 export const register = async (req: Request, res: Response) => {
-  const { name, email, password } = req.body;
+  const { name, email, password } = req.validatedBody as z.infer<
+    typeof registerUserSchema
+  >;
   const { user, accessToken, refreshToken } = await registerUser(
     name,
     email,
@@ -28,7 +35,9 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { email, password } = req.validatedBody as z.infer<
+    typeof loginUserSchema
+  >;
 
   const { user, accessToken, refreshToken } = await loginUser(email, password);
 

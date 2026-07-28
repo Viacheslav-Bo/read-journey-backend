@@ -5,7 +5,7 @@ import {
   refresh,
   register,
 } from '../controllers/authController.js';
-import { validate } from '../middlewares/validate.js';
+import { validateBody } from '../middlewares/validate.js';
 import {
   loginUserSchema,
   registerUserSchema,
@@ -17,10 +17,10 @@ import { authenticate } from '../middlewares/authenticate.js';
 const router = Router();
 
 // Реєстрація
-router.post('/register', validate(registerUserSchema), register);
+router.post('/register', validateBody(registerUserSchema), register);
 
 // Логін
-router.post('/login', validate(loginUserSchema), login);
+router.post('/login', validateBody(loginUserSchema), login);
 
 // Поточний користувач
 router.get('/me', authenticate, (req, res) => {
