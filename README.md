@@ -152,3 +152,33 @@ npx playwright test
 ```
 
 Covers the full `auth` flow (register, login, logout with idempotency, refresh-token rotation) and `library`/`reading` (adding, filtering, ownership-checked deletion, start/stop reading, status transitions, stats).
+
+## Deployment
+
+Deployed as a Docker container on **Render** — a PostgreSQL instance and a Web Service, both created directly in the Render dashboard (Web Service must be created with Docker explicitly selected as the runtime, not the auto-detected Node.js option, otherwise Render ignores the `Dockerfile` and falls back to its own build/start commands).
+
+`Dockerfile`:
+
+```dockerfile
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY . .
+RUN npm install
+
+RUN npx prisma generate
+RUN npm run build
+
+EXPOSE 3000
+
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
+```
+
+The whole project is copied in **before** `npm install`, since `postinstall` runs `prisma generate`, which needs `prisma/schema.prisma` to already be present in the image.
+
+Migrations run as part of the container's start command (`prisma migrate deploy && npm start`) rather than as a separate pre-deploy step, since that's a paid-tier feature on Render.
+
+Environment variables are set directly in the Render dashboard (not from `.env`, which is excluded via `.dockerignore`): `DATABASE_URL` (Render's Internal Database URL for the Postgres instance), `JWT_SECRET`, `NODE_ENV=production`, `OPENLIB_API_URL`, `FRONTEND_DOMAIN`.
+
+The domain (`viach.dev`, managed on Cloudflare) points `api.readjourney.viach.dev` at the Render service via a `CNAME` record — frontend and backend as subdomains of the same registrable domain keeps auth cookies same-site (`SameSite=Lax`), avoiding cross-site cookie complications.
