@@ -4,6 +4,7 @@ import {
   addBook,
   deleteBook,
   getBooks,
+  getOneBook,
 } from '../controllers/libraryController.js';
 import { authenticate } from '../middlewares/authenticate.js';
 import {
@@ -20,6 +21,7 @@ import {
 const router = Router();
 
 router.get('/', authenticate, validateQuery(getBooksSchema), getBooks);
+router.get('/:id', authenticate, validateParams(idParamSchema), getOneBook);
 router.post('/', authenticate, validateBody(addBookSchema), addBook);
 router.delete('/:id', authenticate, validateParams(idParamSchema), deleteBook);
 

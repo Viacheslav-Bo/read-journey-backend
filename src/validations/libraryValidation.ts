@@ -9,6 +9,8 @@ export const addBookSchema = z.object({
   title: z.string().min(1),
   author: z.string().min(1),
   totalPages: z.number().int().positive().max(25000),
+  coverUrl: z.string().optional(),
+  openLibraryId: z.string().optional(),
 });
 
 export const idParamSchema = z.object({

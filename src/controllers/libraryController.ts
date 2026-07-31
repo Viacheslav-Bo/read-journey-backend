@@ -9,20 +9,15 @@ import {
 import createHttpError from 'http-errors';
 import { getBooksFromLibrary } from '../services/library/getBooks.js';
 import { deleteBookFromLibrary } from '../services/library/deleteBook.js';
+import { getBookById } from '../services/library/getBookById.js';
 
 export const addBook = async (req: Request, res: Response) => {
   if (!req.user) throw createHttpError(401, 'Unauthorized');
-  const user = req.user;
+  const { userId } = req.user;
 
-  const { title, author, totalPages } = req.validatedBody as z.infer<
-    typeof addBookSchema
-  >;
-  const result = await addBookToLibrary(user.userId, {
-    title,
-    author,
-    totalPages,
-  });
-  res.status(200).json(result);
+  const data = req.validatedBody as z.infer<typeof addBookSchema>;
+  const result = await addBookToLibrary(userId, data);
+  res.status(201).json(result);
 };
 
 export const getBooks = async (req: Request, res: Response) => {
@@ -32,6 +27,15 @@ export const getBooks = async (req: Request, res: Response) => {
   const { status } = req.validatedQuery as z.infer<typeof getBooksSchema>;
   const result = await getBooksFromLibrary(user.userId, status);
   res.status(200).json(result);
+};
+
+export const getOneBook = async (req: Request, res: Response) => {
+  if (!req.user) throw createHttpError(401, 'Unauthorized');
+  const { userId } = req.user;
+  const { id } = req.validatedParams as z.infer<typeof idParamSchema>;
+
+  const book = await getBookById(userId, id);
+  res.status(200).json(book);
 };
 
 export const deleteBook = async (req: Request, res: Response) => {
