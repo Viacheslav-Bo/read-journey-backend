@@ -19,20 +19,29 @@ export const stop = async (userId: string, bookId: string, endPage: number) => {
     throw createHttpError(404, 'No active reading session found');
   }
 
+  if (endPage < openSession.startPage) {
+    throw createHttpError(400, 'End page cannot be less than start page');
+  }
+
+  const finalPage = Math.min(endPage, libraryBook.totalPages);
+
   await prisma.readingSession.update({
     where: { id: openSession.id },
-    data: { endPage, finishedAt: new Date() },
+    data: {
+      endPage: finalPage,
+      finishedAt: new Date(),
+    },
   });
 
   const newStatus =
-    endPage === libraryBook.totalPages
+    finalPage >= libraryBook.totalPages
       ? ReadingStatus.FINISHED
       : ReadingStatus.READING;
 
   await prisma.libraryBook.update({
     where: { id: bookId },
     data: {
-      currentPage: endPage,
+      currentPage: finalPage,
       status: newStatus,
     },
   });
