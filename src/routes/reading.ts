@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { validateBody, validateParams } from '../middlewares/validate.js';
 import {
   idParamSchema,
+  startReadingSchema,
   stopReadingSchema,
   sessionParamSchema,
 } from '../validations/readingValidation.js';
@@ -19,6 +20,7 @@ router.post(
   '/:id/start',
   authenticate,
   validateParams(idParamSchema),
+  validateBody(startReadingSchema),
   startReading,
 );
 

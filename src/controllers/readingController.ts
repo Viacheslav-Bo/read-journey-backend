@@ -3,23 +3,29 @@ import type { z } from 'zod';
 import createHttpError from 'http-errors';
 import {
   idParamSchema,
+  startReadingSchema,
   stopReadingSchema,
+  sessionParamSchema,
 } from '../validations/readingValidation.js';
 import { start } from '../services/reading/startReading.js';
 import { stop } from '../services/reading/stopReading.js';
 import { getReadingSessions } from '../services/reading/readingSession.js';
 import { deleteReadingSession } from '../services/reading/deleteSession.js';
-import { sessionParamSchema } from '../validations/readingValidation.js';
 
 export const startReading = async (req: Request, res: Response) => {
   if (!req.user) throw createHttpError(401, 'Unauthorized');
-  const user = req.user;
+
+  const { userId } = req.user;
+
   const { id: libraryBookId } = req.validatedParams as z.infer<
     typeof idParamSchema
   >;
 
-  await start(user.userId, libraryBookId);
-  res.status(201).json({ message: 'Reading start' });
+  const { startPage } = req.validatedBody as z.infer<typeof startReadingSchema>;
+
+  await start(userId, libraryBookId, startPage);
+
+  res.status(201).json({ message: 'Reading started' });
 };
 
 export const stopReading = async (req: Request, res: Response) => {
